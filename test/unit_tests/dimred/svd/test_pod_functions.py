@@ -6,7 +6,7 @@ from lasso.dimred.svd.pod_functions import calculate_v_and_betas
 
 
 class PodFunctionsTest(TestCase):
-    def test_calculate_v_and_betas(self):
+    def test_calculate_v_and_betas(self) -> None:
         """Verify svd works
         Test for:
         - returns V and B of correct shape

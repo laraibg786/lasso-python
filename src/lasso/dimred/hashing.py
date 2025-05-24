@@ -226,7 +226,7 @@ def run_hash_comparison(
     hashes_filepaths: list[str],
     n_threads: int = 1,
     print_progress: bool = False,
-):
+) -> None:
     """Compare two hashes of a simulation run part
 
     Parameters

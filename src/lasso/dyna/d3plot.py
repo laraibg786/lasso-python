@@ -82,7 +82,7 @@ def _check_array_occurrence(
     return False
 
 
-def _negative_to_positive_state_indexes(indexes: set[int], n_entries) -> set[int]:
+def negative_to_positive_state_indexes(indexes: set[int], n_entries) -> set[int]:
     """Convert negative indexes of an iterable to positive ones
 
     Parameters
@@ -178,14 +178,14 @@ class D3plotWriterSettings:
         return self._header
 
     @header.setter
-    def set_header(self, new_header: dict):
+    def set_header(self, new_header: dict) -> None:
         if not isinstance(new_header, dict):
             raise TypeError(f"new_header must be a dict, got {type(new_header)}")
 
         self._header = new_header
 
     # pylint: disable = too-many-branches, too-many-statements, too-many-locals
-    def build_header(self):
+    def build_header(self) -> None:
         """Build the new d3plot header"""
 
         new_header = {}
@@ -430,7 +430,7 @@ class D3plotWriterSettings:
         )
         n_solid_layers = 1 if n_solid_layers < 1 else n_solid_layers
         self.n_solid_layers = n_solid_layers
-        if n_solid_layers not in (1, 8):
+        if n_solid_layers not in {1, 8}:
             err_msg = "Solids must have either 1 or 8 integration layers not {0}."
             raise ValueError(err_msg.format(self.n_solid_layers))
 
@@ -440,7 +440,7 @@ class D3plotWriterSettings:
             has_layers=True,
             n_layers=n_solid_layers,
         )
-        n_solid_hist_vars = n_solid_hist_vars // n_solid_layers
+        n_solid_hist_vars //= n_solid_layers
 
         if ArrayType.element_solid_strain in self.d3plot.arrays:
             n_solid_hist_vars += 6
@@ -1110,7 +1110,7 @@ class D3plotWriterSettings:
             If the type cannot be deserialized for being unknown.
         """
 
-        if dtype_hint not in (None, np.integer, np.floating):
+        if dtype_hint not in {None, np.integer, np.floating}:
             raise TypeError(
                 f"dtype_hint must be None, np.integer, or np.floating, got {dtype_hint}"
             )
@@ -1430,7 +1430,7 @@ class D3plot:
     # pylint: disable = too-many-arguments, too-many-statements, unused-argument
     def __init__(
         self,
-        filepath: str = None,
+        filepath: typing.Optional[str] = None,
         use_femzip: Union[bool, None] = None,
         n_files_to_load_at_once: Union[int, None] = None,
         state_array_filter: Union[list[str], None] = None,
@@ -1676,7 +1676,7 @@ class D3plot:
             double precision hex: 000000007E842EC1).
         """
 
-        if ftype not in (np.float32, np.float64):
+        if ftype not in {np.float32, np.float64}:
             err_msg = "Floating point type '{0}' is not a floating point type."
             raise ValueError(err_msg.format(ftype))
 
@@ -1780,7 +1780,7 @@ class D3plot:
 
         # convert negative state indexes into positive ones
         if state_filter is not None:
-            state_filter = _negative_to_positive_state_indexes(state_filter, n_states)
+            state_filter = negative_to_positive_state_indexes(state_filter, n_states)
 
         # if using buffered reading, we load one state at a time
         # into memory
@@ -1850,7 +1850,7 @@ class D3plot:
         # convert negative filter indexes
         state_filter_parsed: set[int] = set()
         if state_filter is not None:
-            state_filter_parsed = _negative_to_positive_state_indexes(state_filter, n_timesteps)
+            state_filter_parsed = negative_to_positive_state_indexes(state_filter, n_timesteps)
             n_states_to_load = len(state_filter)
         else:
             n_states_to_load = n_timesteps
@@ -2796,7 +2796,7 @@ class D3plot:
 
         # size of geometry section checking
         ngeom = info.n_geometric_variables
-        if ngeom not in [4, 5]:
+        if ngeom not in {4, 5}:
             raise RuntimeError("variable ngeom in the airbag header must be 4 or 5.")
 
         original_position = position
@@ -3168,11 +3168,11 @@ class D3plot:
         if not buffer:
             return geometry_section_size
 
-        if header.filetype not in (
+        if header.filetype not in {
             D3plotFiletype.D3PLOT,
             D3plotFiletype.D3PART,
             D3plotFiletype.INTFOR,
-        ):
+        }:
             return geometry_section_size
 
         LOGGER.debug(
@@ -3202,7 +3202,7 @@ class D3plot:
             # read first ntype
             current_ntype = buffer.read_number(position, header.itype)
 
-            while current_ntype in [90000, 90001, 90002, 90020]:
+            while current_ntype in {90000, 90001, 90002, 90020}:
                 # title output
                 if current_ntype == 90000:
                     ntypes.append(current_ntype)
@@ -3218,7 +3218,7 @@ class D3plot:
                     position += array_length
 
                 # some title output
-                elif current_ntype in [90001, 90002, 90020]:
+                elif current_ntype in {90001, 90002, 90020}:
                     ntypes.append(current_ntype)
                     position += header.wordsize
 
@@ -6035,14 +6035,14 @@ class D3plot:
         value = self._buffer.read_number(44, np.int32)
         if value > 1000:
             value -= 1000
-        if value in (1, 5, 11):
+        if value in {1, 5, 11}:
             return 4, np.int32, np.float32
 
         # double precision
         value = self._buffer.read_number(88, np.int64)
         if value > 1000:
             value -= 1000
-        if value in (1, 5, 11):
+        if value in {1, 5, 11}:
             return 8, np.int64, np.float64
 
         raise RuntimeError(f"Unknown file type '{value}'.")
@@ -6054,7 +6054,7 @@ class D3plot:
         is_element_field: bool = True,
         fringe_limits: Union[tuple[float, float], None] = None,
         export_filepath: str = "",
-    ):
+    ) -> None:
         """Plot the d3plot geometry
 
         Parameters
@@ -6129,7 +6129,7 @@ class D3plot:
                 raise ValueError(msg.format(node_xyz.shape, field.shape))
 
         # create plot
-        _html = plot_shell_mesh(
+        html = plot_shell_mesh(
             node_coordinates=node_xyz,
             shell_node_indexes=shell_node_indexes,
             field=field,
@@ -6150,18 +6150,18 @@ class D3plot:
 
         if export_filepath:
             with open(export_filepath, "w", encoding="utf-8") as fp:
-                fp.write(_html)
+                fp.write(html)
         else:
             # create new temp file
             with tempfile.NamedTemporaryFile(
-                dir=tempdir, suffix=".html", mode="w", delete=False
+                dir=tempdir, suffix=".html", mode="w", delete=False, encoding="utf-8"
             ) as fp:
-                fp.write(_html)
+                fp.write(html)
                 webbrowser.open(fp.name)
 
     def write_d3plot(
         self, filepath: Union[str, BinaryIO], block_size_bytes: int = 2048, single_file: bool = True
-    ):
+    ) -> None:
         """Write a d3plot file again
 
         Parameters
@@ -6951,7 +6951,7 @@ class D3plot:
         # this type of rigid body descriptions are very rare
         # and thus badly tested
 
-        if settings.header["ndim"] not in (8, 9):
+        if settings.header["ndim"] not in {8, 9}:
             return 0
 
         _check_ndim(self, {ArrayType.rigid_body_part_indexes: ["n_rigid_bodies"]})
@@ -7854,9 +7854,7 @@ class D3plot:
             * settings.header["numnp"]
         )
         if byte_checksum != byte_checksum_target:
-            msg = (
-                "byte checksum wrong: {byte_checksum_target} (header) != {byte_checksum} (checksum)"
-            )
+            msg = f"byte checksum wrong: {byte_checksum_target} (header) != {byte_checksum} (checksum)"
             raise RuntimeError(msg)
 
         # log

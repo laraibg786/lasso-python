@@ -13,7 +13,7 @@ from lasso.io.binary_buffer import BinaryBuffer
 
 
 class D3plotHeaderTest(TestCase):
-    def test_loading(self):
+    def test_loading(self) -> None:
         filepaths = [
             "test/test_data/simple_d3plot/d3plot",
             "test/test_data/d3plot_node_temperature/d3plot",

@@ -29,7 +29,7 @@ class PlaceHolderBar:
         # entry in list is tuple of description, total tasks, remaining tasks
         return len(self.tasks) - 1
 
-    def advance(self, task_id):
+    def advance(self, task_id) -> None:
         """advances the given task"""
         prog = self.tasks[task_id][2]
         prog += 1
@@ -118,7 +118,7 @@ class SubsamplingWaitTime(ProgressColumn):
 
         return "Time remaining: --:--"
 
-    def update_avrg(self, new_time: float):
+    def update_avrg(self, new_time: float) -> None:
         """TODO: add description"""
 
         self.cum_time += new_time

@@ -70,7 +70,7 @@ def calculate_v_and_betas(
     ))
 
     # We only want the difference in displacement
-    big_mat = big_mat - diff_mat
+    big_mat -= diff_mat
 
     k = min(10, big_mat.shape[0] - 1)
     if k < 1:

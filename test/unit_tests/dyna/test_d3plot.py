@@ -6,13 +6,13 @@ from unittest import TestCase
 import numpy as np
 
 from lasso.dyna.array_type import ArrayType
-from lasso.dyna.d3plot import D3plot, FilterType, _negative_to_positive_state_indexes
+from lasso.dyna.d3plot import D3plot, FilterType, negative_to_positive_state_indexes
 from lasso.femzip.femzip_api import FemzipAPI
 from lasso.io.binary_buffer import BinaryBuffer
 
 
 class D3plotTest(TestCase):
-    def test_init(self):
+    def test_init(self) -> None:
         # settings
         self.maxDiff = None
 
@@ -93,7 +93,7 @@ class D3plotTest(TestCase):
         self.assertDictEqual(hdr_diff, {})
         self.assertDictEqual(array_diff, {})
 
-    def test_header(self):
+    def test_header(self) -> None:
         test_header_data = {
             "title": "                                    ",
             "runtime": 1472027823,
@@ -156,7 +156,7 @@ class D3plotTest(TestCase):
         for name, value in test_header_data.items():
             self.assertEqual(header.raw_header[name], value, f"Invalid var {name}")
 
-    def test_beam_integration_points(self):
+    def test_beam_integration_points(self) -> None:
         self.maxDiff = None
 
         filepath = "test/test_data/d3plot_beamip/d3plot"
@@ -179,7 +179,7 @@ class D3plotTest(TestCase):
                 array.max(), minmax[1], msg=f"{array_name}: {array.max()} != {minmax[1]}"
             )
 
-    def test_correct_sort_of_more_than_100_state_files(self):
+    def test_correct_sort_of_more_than_100_state_files(self) -> None:
         filepath = "test/test_data/order_d3plot/d3plot"
 
         d3plot = D3plot(filepath)
@@ -187,7 +187,7 @@ class D3plotTest(TestCase):
         timesteps = d3plot.arrays[ArrayType.global_timesteps]
         self.assertListEqual(timesteps.astype(int).tolist(), [1, 2, 10, 11, 12, 22, 100])
 
-    def test_femzip_basic(self):
+    def test_femzip_basic(self) -> None:
         self.maxDiff = None
 
         filepath1 = "test/test_data/femzip/d3plot.fz"
@@ -206,7 +206,7 @@ class D3plotTest(TestCase):
             self.assertDictEqual(hdr_diff, {})
             self.assertDictEqual(array_diff, {})
 
-    def test_femzip_extended(self):
+    def test_femzip_extended(self) -> None:
         self.maxDiff = None
 
         filepath1 = "test/test_data/femzip/d3plot.fz"
@@ -229,7 +229,7 @@ class D3plotTest(TestCase):
             self.assertDictEqual(hdr_diff, {})
             self.assertDictEqual(array_diff, {})
 
-    def test_part_filter(self):
+    def test_part_filter(self) -> None:
         self.maxDiff = None
 
         filepath = "test/test_data/simple_d3plot/d3plot"
@@ -245,7 +245,7 @@ class D3plotTest(TestCase):
         node_filter = d3plot.get_part_filter(FilterType.NODE, part_ids)
         self.assertEqual(len(node_filter), 4915)
 
-    def test_read_solid_integration_points(self):
+    def test_read_solid_integration_points(self) -> None:
         filepath = "test/test_data/d3plot_solid_int/d3plot"
 
         # data from META
@@ -283,15 +283,15 @@ class D3plotTest(TestCase):
 
     def test_negative_to_positive_state_indexes(self) -> None:
         indexes = set()
-        new_indexes = _negative_to_positive_state_indexes(indexes, len(indexes))
+        new_indexes = negative_to_positive_state_indexes(indexes, len(indexes))
         self.assertSetEqual(indexes, new_indexes)
 
         indexes = {0, 1, 2}
         with self.assertRaises(ValueError):
-            new_indexes = _negative_to_positive_state_indexes(indexes, 2)
+            new_indexes = negative_to_positive_state_indexes(indexes, 2)
 
         indexes = {0, -1}
-        new_indexes = _negative_to_positive_state_indexes(indexes, 8)
+        new_indexes = negative_to_positive_state_indexes(indexes, 8)
         self.assertSetEqual(new_indexes, {0, 7})
 
     def test_is_end_of_file_marker(self) -> None:
@@ -320,7 +320,7 @@ class D3plotTest(TestCase):
         with self.assertRaises(ValueError):
             result = D3plot._is_end_of_file_marker(bb, 0, np.int32)
 
-    def test_write(self):
+    def test_write(self) -> None:
         self.maxDiff = None
 
         filepaths = [
@@ -352,7 +352,7 @@ class D3plotTest(TestCase):
                     self.assertDictEqual(hdr_diff, {}, err_msg)
                     self.assertDictEqual(array_diff, {}, err_msg)
 
-    def test_write_new(self):
+    def test_write_new(self) -> None:
         self.maxDiff = None
 
         d3plot1 = D3plot()
@@ -390,7 +390,7 @@ class D3plotTest(TestCase):
             self.assertTrue(os.path.isfile(filepath))
             self.assertTrue(os.path.isfile(filepath + "01"))
 
-    def test_append_4_shell_hists_then_read_bug(self):
+    def test_append_4_shell_hists_then_read_bug(self) -> None:
         self.maxDiff = None
 
         # we need some d3plot
@@ -429,7 +429,7 @@ class D3plotTest(TestCase):
             d3plot_modif = D3plot(filepath2)
             self.assertTrue(ArrayType.element_shell_internal_energy not in d3plot_modif.arrays)
 
-    def test_reading_selected_states(self):
+    def test_reading_selected_states(self) -> None:
         # read all states
         filepath = "test/test_data/d3plot_solid_int/d3plot"
 

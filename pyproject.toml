@@ -72,13 +72,13 @@ output-format = "grouped"
 isort.lines-after-imports = 2
 select = [
     "C",   # Complexity checks (e.g., McCabe complexity, comprehensions)
-    # "ANN001", "ANN201", "ANN401", # flake8-annotations (required strict type annotations for public functions)
+    "ANN001", "ANN201", "ANN401", # flake8-annotations (required strict type annotations for public functions)
     "S",   # flake8-bandit (checks basic security issues in code)
-    # "BLE", # flake8-blind-except (checks the except blocks that do not specify exception)
-    # "FBT", # flake8-boolean-trap (ensure that boolean args can be used with kw only)
+    "BLE", # flake8-blind-except (checks the except blocks that do not specify exception)
+    "FBT", # flake8-boolean-trap (ensure that boolean args can be used with kw only)
     "E",   # pycodestyle errors (PEP 8 style guide violations)
     "W",   # pycodestyle warnings (e.g., extra spaces, indentation issues)
-    # "DOC", # pydoclint issues (e.g., extra or missing return, yield, warnings)
+    "DOC", # pydoclint issues (e.g., extra or missing return, yield, warnings)
     "A",   # flake8-buitins (check variable and function names to not shadow builtins)
     "N",   # Naming convention checks (e.g., PEP 8 variable and function names)
     "F",   # Pyflakes errors (e.g., unused imports, undefined variables)
@@ -87,15 +87,22 @@ select = [
     "TID", # flake8-tidy-imports (Checks for banned or misplaced imports)
     "UP",  # pyupgrade (Automatically updates old Python syntax)
     "YTT", # flake8-2020 (Detects outdated Python 2/3 compatibility issues)
+    "PTH", # flake8-use-pathlib (Suggests using pathlib over os.path, open, etc.)
     "FLY", # flynt (Converts old-style string formatting to f-strings)
     "PIE", # flake8-pie
-    # "PL",  # pylint
-    # "RUF", # Ruff-specific rules (Additional optimizations and best practices)
+    "PL",  # pylint
+    "RUF", # Ruff-specific rules (Additional optimizations and best practices)
 ]
 
 ignore = [
     "C90",      # [mccabe](https://docs.astral.sh/ruff/rules/#mccabe-c90)
+    "PLR0912",  # [too-many-branches](https://docs.astral.sh/ruff/rules/too-many-branches/)
+    "PLR0913",  # [too-many-arguments](https://docs.astral.sh/ruff/rules/too-many-arguments/)
+    "PLR0915",  # [too-many-statements](https://docs.astral.sh/ruff/rules/too-many-statements/)
+    "PLR1702",  # [too-many-nested-blocks](https://docs.astral.sh/ruff/rules/too-many-nested-blocks/)
     "PLR2004",  # [magic-value-comparision](https://docs.astral.sh/ruff/rules/magic-value-comparison)
+    "PTH123",   # [builtin-open](https://docs.astral.sh/ruff/rules/builtin-open/)
+    "PTH207",   # [glob](https://docs.astral.sh/ruff/rules/glob/)
     "S311",     # [suspicious-non-cryptographic-random-usage](https://docs.astral.sh/ruff/rules/suspicious-non-cryptographic-random-usage/)
     "S404",     # [suspicious-subprocess-import](https://docs.astral.sh/ruff/rules/suspicious-subprocess-import/)
     "S603",     # [subprocess-without-shell-equals-true](https://docs.astral.sh/ruff/rules/subprocess-without-shell-equals-true/)
@@ -103,9 +110,16 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 # non-lowercase-variable-in-function (N806)
+# See: https://docs.astral.sh/ruff/rules/non-lowercase-variable-in-function/
 "{femzip_api,femzip_mapper,d3plot,}.py" = ["N806"]
+
 # error-suffix-on-exception-name (N818)
+# See: https://docs.astral.sh/ruff/rules/error-suffix-on-exception-name/
 "{femzip_api}.py" = ["N818"]
+
+# no-self-use (PLR6301)
+# See: https://docs.astral.sh/ruff/rules/no-self-use/
+"**/{test}/*" = ["PLR6301"]
 
 [tool.ruff.format]
 docstring-code-format = true

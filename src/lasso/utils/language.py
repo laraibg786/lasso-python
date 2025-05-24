@@ -24,7 +24,7 @@ def get_var(name, context, default=None):
     return current_context
 
 
-def set_var(name, value, context):
+def set_var(name, value, context) -> None:
     """
     Set a variable in a dict context
 

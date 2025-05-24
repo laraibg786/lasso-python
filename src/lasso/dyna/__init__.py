@@ -5,4 +5,4 @@ from .d3plot_header import D3plotFiletype, D3plotHeader
 from .filter_type import FilterType
 
 
-__all__ = ["Binout", "D3plot", "ArrayType", "FilterType", "D3plotHeader", "D3plotFiletype"]
+__all__ = ["ArrayType", "Binout", "D3plot", "D3plotFiletype", "D3plotHeader", "FilterType"]

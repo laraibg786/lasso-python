@@ -8,10 +8,10 @@ import shutil
 import subprocess
 import sys
 import time
-import typing
+from collections.abc import Sequence
 from concurrent import futures
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 import psutil
 
@@ -38,18 +38,15 @@ DC_STAGES = [
 ]
 
 
-def get_application_header():
-    """Prints the header of the command line tool"""
-
-    return """
+DIFFCRASH_APPLICATION_HEADER = """
 
        ==== D I F F C R A S H ====
 
        an open-lasso-python utility script
-    """
+"""
 
 
-def str2bool(value) -> bool:
+def str2bool(value: str) -> bool:
     """Converts some value from the cmd line to a boolean
 
     Parameters
@@ -60,18 +57,23 @@ def str2bool(value) -> bool:
     -------
     bool_value: `bool`
         value as boolean
+
+    Raises
+    ------
+    ArgumentTypeError
+        If the value cannot be interpreted as a boolean.
     """
 
     if isinstance(value, bool):
         return value
-    if value.lower() in ("yes", "true", "t", "y", "1"):
+    if value.lower() in {"yes", "true", "t", "y", "1"}:
         return True
-    if value.lower() in ("no", "false", "f", "n", "0"):
+    if value.lower() in {"no", "false", "f", "n", "0"}:
         return False
     raise argparse.ArgumentTypeError("Boolean value expected.")
 
 
-def parse_diffcrash_args():
+def parse_diffcrash_args() -> argparse.Namespace:
     """Parse the arguments from the command line
 
     Returns
@@ -81,7 +83,7 @@ def parse_diffcrash_args():
     """
 
     # print title
-    print(get_application_header())
+    print(DIFFCRASH_APPLICATION_HEADER)
 
     parser = argparse.ArgumentParser(
         description="Python utility script for Diffcrash written by OPEN-LASSO."
@@ -166,7 +168,7 @@ def parse_diffcrash_args():
     return parser.parse_args(sys.argv[1:])
 
 
-def run_subprocess(args):
+def run_subprocess(args: Union[list[str], str]) -> int:
     """Run a subprocess with the specified arguments
 
     Parameters:
@@ -196,15 +198,16 @@ class DiffcrashRun:
         project_dir: str,
         crash_code: str,
         reference_run: str,
-        simulation_runs: typing.Sequence[str],
-        exclude_runs: typing.Sequence[str],
+        simulation_runs: Sequence[str],
+        exclude_runs: Sequence[str],
+        *,
         diffcrash_home: str = "",
         use_id_mapping: bool = False,
-        config_file: str = None,
-        parameter_file: str = None,
+        config_file: Optional[str] = None,
+        parameter_file: Optional[str] = None,
         n_processes: int = 1,
-        logfile_dir: str = None,
-    ):
+        logfile_dir: Optional[str] = None,
+    ) -> None:
         """Object handling a diffcrash run
 
         Parameters
@@ -247,11 +250,11 @@ class DiffcrashRun:
         self.logger = self._setup_logger()
 
         # make some space in the log
-        self.logger.info(get_application_header())
+        self.logger.info(DIFFCRASH_APPLICATION_HEADER)
 
         # diffcrash home
         self.diffcrash_home = Path(self._parse_diffcrash_home(diffcrash_home))
-        self.diffcrash_home = self.diffcrash_home / "bin"
+        self.diffcrash_home /= "bin"
         self.diffcrash_lib = self.diffcrash_home.parent / "lib"
 
         if platform.system() == "Linux":
@@ -290,7 +293,7 @@ class DiffcrashRun:
 
     def _setup_logger(self) -> logging.Logger:
         # better safe than sorry
-        os.makedirs(self.logfile_dir, exist_ok=True)
+        self.logfile_dir.mkdir(exist_ok=True)
 
         # create console log channel
         # streamHandler = logging.StreamHandler(sys.stdout)
@@ -310,7 +313,7 @@ class DiffcrashRun:
 
         return logger
 
-    def _parse_diffcrash_home(self, diffcrash_home) -> str:
+    def _parse_diffcrash_home(self, diffcrash_home: str) -> str:
         diffcrash_home_ok = len(diffcrash_home) != 0
 
         msg = self._msg_option.format("diffcrash-home", diffcrash_home)
@@ -327,7 +330,7 @@ class DiffcrashRun:
 
         return diffcrash_home
 
-    def _parse_crash_code(self, crash_code) -> str:
+    def _parse_crash_code(self, crash_code: str) -> str:
         # these guys are allowed
         valid_crash_codes = ["dyna", "radioss", "pam"]
 
@@ -344,12 +347,12 @@ class DiffcrashRun:
 
         return crash_code
 
-    def _parse_reference_run(self, reference_run) -> str:
-        reference_run_ok = Path(reference_run).is_file()
+    def _parse_reference_run(self, reference_run: str) -> str:
+        reference_run_ok: bool = Path(reference_run).is_file()
 
         msg = self._msg_option.format("reference-run", reference_run)
-        print(str_info(msg))
-        self.logger.info(msg)
+        print(str_info(msg=msg))
+        self.logger.info(msg=msg)
 
         if not reference_run_ok:
             err_msg = f"Filepath '{reference_run}' is not a file."
@@ -358,14 +361,14 @@ class DiffcrashRun:
 
         return reference_run
 
-    def _parse_use_id_mapping(self, use_id_mapping) -> bool:
+    def _parse_use_id_mapping(self, *, use_id_mapping: bool) -> bool:
         msg = self._msg_option.format("use-id-mapping", use_id_mapping)
         print(str_info(msg))
         self.logger.info(msg)
 
         return use_id_mapping
 
-    def _parse_project_dir(self, project_dir):
+    def _parse_project_dir(self, project_dir: str) -> Path:
         project_dir = Path(project_dir).resolve()
 
         msg = self._msg_option.format("project-dir", project_dir)
@@ -376,9 +379,9 @@ class DiffcrashRun:
 
     def _parse_simulation_runs(
         self,
-        simulation_run_patterns: typing.Sequence[str],
+        simulation_run_patterns: Sequence[str],
         reference_run: str,
-        exclude_runs: typing.Sequence[str],
+        exclude_runs: Sequence[str],
     ):
         # search all denoted runs
         simulation_runs = []
@@ -403,10 +406,10 @@ class DiffcrashRun:
             simulation_runs.remove(reference_run)
 
         # sort it because we can!
-        def atoi(text):
+        def atoi(text: str) -> Union[int, str]:
             return int(text) if text.isdigit() else text
 
-        def natural_keys(text):
+        def natural_keys(text: str) -> list[Union[int, str]]:
             return [atoi(c) for c in re.split(r"(\d+)", text)]
 
         simulation_runs = sorted(simulation_runs, key=natural_keys)
@@ -434,16 +437,16 @@ class DiffcrashRun:
 
         return simulation_runs
 
-    def _parse_config_file(self, config_file) -> Union[str, None]:
-        _msg_config_file = ""
+    def _parse_config_file(self, config_file: str) -> Union[str, None]:
+        msg_config_file = ""
         if len(config_file) > 0 and not Path(config_file).is_file():
             config_file = None
-            _msg_config_file = f"Can not find config file '{config_file}'"
+            msg_config_file = f"Can not find config file '{config_file}'"
 
         # missing config file
         else:
             config_file = None
-            _msg_config_file = (
+            msg_config_file = (
                 "Config file missing. Consider specifying the path with the option '--config-file'."
             )
 
@@ -451,21 +454,21 @@ class DiffcrashRun:
         print(str_info(msg))
         self.logger.info(msg)
 
-        if _msg_config_file:
-            print(str_warn(_msg_config_file))
-            self.logger.warning(_msg_config_file)
+        if msg_config_file:
+            print(str_warn(msg_config_file))
+            self.logger.warning(msg_config_file)
 
         return config_file
 
-    def _parse_parameter_file(self, parameter_file) -> Union[None, str]:
-        _msg_parameter_file = ""
+    def _parse_parameter_file(self, parameter_file: str) -> Union[str, None]:
+        msg_parameter_file = ""
         if len(parameter_file) > 0 and not Path(parameter_file).is_file():
             parameter_file = None
-            _msg_parameter_file = f"Can not find parameter file '{parameter_file}'"
+            msg_parameter_file = f"Can not find parameter file '{parameter_file}'"
         # missing parameter file
         else:
             parameter_file = None
-            _msg_parameter_file = (
+            msg_parameter_file = (
                 "Parameter file missing. Consider specifying the "
                 "path with the option '--parameter-file'."
             )
@@ -474,13 +477,13 @@ class DiffcrashRun:
         print(str_info(msg))
         self.logger.info(msg)
 
-        if _msg_parameter_file:
-            print(str_warn(_msg_parameter_file))
-            self.logger.warning(_msg_parameter_file)
+        if msg_parameter_file:
+            print(str_warn(msg_parameter_file))
+            self.logger.warning(msg_parameter_file)
 
         return parameter_file
 
-    def _parse_n_processes(self, n_processes) -> int:
+    def _parse_n_processes(self, n_processes: int) -> int:
         print(str_info(self._msg_option.format("n-processes", n_processes)))
 
         if n_processes <= 0:
@@ -490,7 +493,7 @@ class DiffcrashRun:
 
         return n_processes
 
-    def create_project_dirs(self):
+    def create_project_dirs(self) -> None:
         """Creates all project relevant directores
 
         Notes
@@ -499,16 +502,21 @@ class DiffcrashRun:
              - logfile_dir
              - project_dir
         """
-        os.makedirs(self.project_dir, exist_ok=True)
-        os.makedirs(self.logfile_dir, exist_ok=True)
+        self.project_dir.mkdir(exist_ok=True)
+        self.logfile_dir.mkdir(exist_ok=True)
 
-    def run_setup(self, pool: futures.ThreadPoolExecutor):
+    def run_setup(self, pool: futures.ThreadPoolExecutor) -> None:
         """Run diffcrash setup
 
         Parameters
         ----------
         pool : `concurrent.futures.ThreadPoolExecutor`
             multiprocessing pool
+
+        Raises
+        ------
+        RuntimeError
+            If the diffcrash setup process fails.
         """
 
         # SETUP
@@ -606,13 +614,18 @@ class DiffcrashRun:
         print(str_success(msg))
         self.logger.info(msg)
 
-    def run_import(self, pool: futures.ThreadPoolExecutor):
+    def run_import(self, pool: futures.ThreadPoolExecutor) -> None:
         """Run diffcrash import of runs
 
         Parameters
         ----------
         pool : `concurrent.futures.ThreadPoolExecutor`
             multiprocessing pool
+
+        Raises
+        ------
+        RuntimeError
+            If the diffcrash import of runs fails.
         """
 
         # pylint: disable = too-many-locals, too-many-branches, too-many-statements
@@ -707,11 +720,11 @@ class DiffcrashRun:
             n_failed_runs = 0
             for i_run, return_code in enumerate(return_codes):
                 if return_code != 0:
-                    _err_msg = str_error(
+                    err_msg_ = str_error(
                         f"Run {i_run} failed to import with error code '{return_code}'."
                     )
-                    print(str_error(_err_msg))
-                    self.logger.error(_err_msg)
+                    print(str_error(err_msg_))
+                    self.logger.error(err_msg_)
                     n_failed_runs += 1
 
             err_msg = f"Running Imports ... done in {time.time() - start_time:.2f}s   "
@@ -744,13 +757,18 @@ class DiffcrashRun:
         # print success
         print(str_success(f"Running Imports ... done in {time.time() - start_time:.2f}s   "))
 
-    def run_math(self, pool: futures.ThreadPoolExecutor):
+    def run_math(self, pool: futures.ThreadPoolExecutor) -> None:
         """Run diffcrash math
 
         Parameters
         ----------
         pool : `concurrent.futures.ThreadPoolExecutor`
             multiprocessing pool
+
+        Raises
+        ------
+        RuntimeError
+            If the diffcrash math process fails.
         """
 
         msg = "Running Math ... \r"
@@ -798,13 +816,18 @@ class DiffcrashRun:
         print(str_success(msg))
         self.logger.info(msg)
 
-    def run_export(self, pool: futures.ThreadPoolExecutor):
+    def run_export(self, pool: futures.ThreadPoolExecutor) -> None:
         """Run diffcrash export
 
         Parameters
         ----------
         pool : `concurrent.futures.ThreadPoolExecutor`
             multiprocessing pool
+
+        Raises
+        ------
+        RuntimeError
+            If the diffcrash export fails.
         """
 
         msg = "Running Export ... "
@@ -890,13 +913,18 @@ class DiffcrashRun:
         print(str_success(msg))
         self.logger.info(msg)
 
-    def run_matrix(self, pool: futures.ThreadPoolExecutor):
+    def run_matrix(self, pool: futures.ThreadPoolExecutor) -> None:
         """Run diffcrash matrix
 
         Parameters
         ----------
         pool : `concurrent.futures.ThreadPoolExecutor`
             multiprocessing pool
+
+        Raises
+        ------
+        RuntimeError
+            If the diffcrash matrix execution fails.
         """
 
         msg = "Running Matrix ... "
@@ -906,7 +934,7 @@ class DiffcrashRun:
         start_time = time.time()
 
         # create the input file for the process
-        matrix_inputfile = self._create_matrix_input_file(self.project_dir)
+        matrix_inputfile = DiffcrashRun._create_matrix_input_file(self.project_dir)
 
         # run the thing
         return_code_future = pool.submit(
@@ -954,13 +982,18 @@ class DiffcrashRun:
         print(str_success(msg))
         self.logger.info(msg)
 
-    def run_eigen(self, pool: futures.ThreadPoolExecutor):
+    def run_eigen(self, pool: futures.ThreadPoolExecutor) -> None:
         """Run diffcrash eigen
 
         Parameters
         ----------
         pool : `concurrent.futures.ThreadPoolExecutor`
             multiprocessing pool
+
+        Raises
+        ------
+        RuntimeError
+            If the diffcrash eigen execution fails.
         """
 
         msg = "Running Eigen ... "
@@ -968,7 +1001,7 @@ class DiffcrashRun:
         self.logger.info(msg)
 
         # create input file for process
-        eigen_inputfile = self._create_eigen_input_file(self.project_dir)
+        eigen_inputfile = DiffcrashRun._create_eigen_input_file(self.project_dir)
 
         # run the thing
         start_time = time.time()
@@ -1016,13 +1049,18 @@ class DiffcrashRun:
         print(str_success(msg))
         self.logger.info(msg)
 
-    def run_merge(self, pool: futures.ThreadPoolExecutor):
+    def run_merge(self, pool: futures.ThreadPoolExecutor) -> None:
         """Run diffcrash merge
 
         Parameters
         ----------
         pool : `concurrent.futures.ThreadPoolExecutor`
             multiprocessing pool
+
+        Raises
+        ------
+        RuntimeError
+            If the diffcrash merge execution fails.
         """
 
         msg = "Running Merge ... "
@@ -1030,7 +1068,7 @@ class DiffcrashRun:
         self.logger.info(msg)
 
         # create ionput file for merge
-        merge_inputfile = self._create_merge_input_file(self.project_dir)
+        merge_inputfile = DiffcrashRun._create_merge_input_file(self.project_dir)
 
         # clear previous merges
         for filepath in self.project_dir.glob("mode_*"):
@@ -1079,7 +1117,8 @@ class DiffcrashRun:
         print(str_success(msg))
         self.logger.info(msg)
 
-    def is_logfile_successful(self, logfile: Path) -> bool:
+    @staticmethod
+    def is_logfile_successful(logfile: Path) -> bool:
         """Checks if a logfile indicates a success
 
         Parameters
@@ -1098,8 +1137,18 @@ class DiffcrashRun:
                     return True
         return False
 
-    def _create_merge_input_file(self, directory: Path) -> Path:
+    @staticmethod
+    def _create_merge_input_file(directory: Path) -> Path:
         """Create an input file for the merge executable
+
+        Parameters
+        ----------
+        directory : `Path`
+            Path to the directory
+
+        Returns
+        -------
+        filepath : `Path`
 
         Notes
         -----
@@ -1127,8 +1176,18 @@ class DiffcrashRun:
 
         return filepath
 
-    def _create_eigen_input_file(self, directory: Path) -> Path:
+    @staticmethod
+    def _create_eigen_input_file(directory: Path) -> Path:
         """Create an input file for the eigen executable
+
+        Parameters
+        ----------
+        directory : `Path`
+            Path to the directory
+
+        Returns
+        -------
+        filepath : `Path`
 
         Notes
         -----
@@ -1150,8 +1209,18 @@ class DiffcrashRun:
 
         return filepath
 
-    def _create_matrix_input_file(self, directory: Path) -> Path:
+    @staticmethod
+    def _create_matrix_input_file(directory: Path) -> Path:
         """Create an input file for the matrix executable
+
+        Parameters
+        ----------
+        directory : `Path`
+            Path to the directory
+
+        Returns
+        -------
+        filepath : `Path`
 
         Notes
         -----
@@ -1167,7 +1236,7 @@ class DiffcrashRun:
 
         return filepath
 
-    def clear_project_dir(self):
+    def clear_project_dir(self) -> None:
         """Clears the entire project dir"""
 
         # disable logging
@@ -1189,6 +1258,10 @@ class DiffcrashRun:
         ----------
         config_file : `str`
             path to the config file
+
+        Returns
+        -------
+        export_item_list : `List[str]`
 
         Notes
         -----
@@ -1279,7 +1352,7 @@ class DiffcrashRun:
 
                         items[k] = items[k].strip()
 
-                        if items[k] != "" and items[k] != "\r":
+                        if items[k] and items[k] != "\r":
                             if postval.lower() == "sigma":
                                 export_item_list.append(
                                     elem + "_" + postval + "_" + "001_" + items[k].lower()
@@ -1318,11 +1391,11 @@ class DiffcrashRun:
             list with messages of failed log checks
         """
 
-        _msg_logfile_nok = str_error("Logfile '{0}' reports no success.")
+        msg_logfile_nok = str_error("Logfile '{0}' reports no success.")
         messages = []
 
         for filepath in self.logfile_dir.glob(pattern):
-            if not self.is_logfile_successful(filepath):
-                messages.append(_msg_logfile_nok.format(filepath))
+            if not DiffcrashRun.is_logfile_successful(filepath):
+                messages.append(msg_logfile_nok.format(filepath))
 
         return messages

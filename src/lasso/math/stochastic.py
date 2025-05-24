@@ -20,7 +20,7 @@ def jensen_shannon_entropy(p: np.ndarray, q: np.ndarray) -> float:
     p = np.asarray(p)
     q = np.asarray(q)
     # normalize
-    p = p / p.sum()
-    q = q / q.sum()
+    p /= p.sum()
+    q /= q.sum()
     m = (p + q) / 2
     return (stats.entropy(p, m) + stats.entropy(q, m)) / 2

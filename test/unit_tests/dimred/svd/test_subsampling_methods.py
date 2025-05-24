@@ -9,7 +9,7 @@ from test.plot_creator_helper import create_n_fake_plots
 
 
 class TestSubsampling(TestCase):
-    def test_create_reference_sample(self):
+    def test_create_reference_sample(self) -> None:
         """Tests the creation of reference sample"""
 
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -48,7 +48,7 @@ class TestSubsampling(TestCase):
 
             self.assertTrue(isinstance(result, str))
 
-    def test_remap_random_subsample(self):
+    def test_remap_random_subsample(self) -> None:
         """Verifies correct subsampling"""
 
         with tempfile.TemporaryDirectory() as tmp_dir:

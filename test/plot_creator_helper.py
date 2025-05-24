@@ -16,7 +16,7 @@ def create_fake_d3plots(
     n_nodes_x: int = 500,
     n_nodes_y: int = 10,
     n_timesteps: int = 5,
-):
+) -> None:
     """
     Creates a number of artificial D3plots to be used in testing
     """
@@ -78,7 +78,7 @@ def create_fake_d3plots(
     # plotUtilFunc(node_displacement)
 
 
-def plot_util_func(xyz_array: np.array):
+def plot_util_func(xyz_array: np.array) -> None:
     trace = go.Scatter3d(
         x=xyz_array[-1, :, 0],
         y=xyz_array[-1, :, 1],
@@ -107,7 +107,7 @@ def create_element_shell_node_indexes(n_nodes_x: int = 500, n_nodes_y: int = 10)
     return new_shell_node_indexes
 
 
-def create_n_fake_plots(folder: str, n_nodes_x: int, n_nodes_y: int, n_timesteps=5, n=50):
+def create_n_fake_plots(folder: str, n_nodes_x: int, n_nodes_y: int, n_timesteps=5, n=50) -> None:
     """
     creates `n` fake plots, `n/2` bending up, `n/2` bending down
 

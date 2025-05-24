@@ -1,5 +1,6 @@
 import os
 import warnings
+from typing import Optional
 
 import h5py
 import numpy as np
@@ -181,7 +182,10 @@ def sphere_hashing(
 
 
 def compute_hashes(
-    source_path: str, target_path: str = None, n_files: int = None, ret_vals: bool = False
+    source_path: str,
+    target_path: Optional[str] = None,
+    n_files: Optional[int] = None,
+    ret_vals: bool = False,
 ):
     """Compute the hashes using spherical projection of the field values
 

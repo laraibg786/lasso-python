@@ -32,7 +32,7 @@ def __apply_spectral_clustering(betas, runids, datasets, idsets, random_state=11
     --------
     Detailed Documentation of the function parameters can be found on sklearn.
     Link: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.SpectralClustering.html#sklearn.cluster.SpectralClustering
-    """  # noqa pylint: disable = line-too-long
+    """
     clustering = SpectralClustering(random_state=random_state, **kwargs).fit(betas)
 
     indexes = clustering.labels_
@@ -69,7 +69,7 @@ def __apply_k_means(betas, runids, datasets, idsets, random_state=11, **kwargs):
     --------
     Detailed Documentation of the function parameters can be found on sklearn.
     Link: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html#sklearn.cluster.KMeans
-    """  # noqa: E501 pylint: disable = line-too-long
+    """
     kmeans = KMeans(random_state=random_state, **kwargs).fit(betas)
     indexes = kmeans.labels_
 
@@ -105,7 +105,7 @@ def __apply_dbscan(betas, runids, datasets, idsets, **kwargs):
     --------
     Detailed Documentation of the function parameters can be found on sklearn.
     Link: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html#sklearn.cluster.DBSCAN
-    """  # noqa: E501 pylint: disable = line-too-long
+    """
     deutsche_bahn = DBSCAN(**kwargs).fit(betas)
     indexes = deutsche_bahn.labels_
 
@@ -141,7 +141,7 @@ def __apply_optics(betas, runids, datasets, idsets, **kwargs):
     -------
     Detailed Documentation of the function parameters can be found on sklearn.
     Link: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.OPTICS.html#sklearn.cluster.OPTICS
-    """  # noqa: E501 pylint: disable = line-too-long
+    """
     lense = OPTICS(**kwargs).fit(betas)
     indexes = lense.labels_
 
@@ -186,7 +186,7 @@ def __detect_outliers_isolation_forest(
     --------
     Detailed Documentation of the function parameters can be found on sklearn.
     Link: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html
-    """  # noqa: E501 pylint: disable = line-too-long
+    """
     outcasts = IsolationForest(random_state=random_state, **kwargs).fit(betas).predict(betas)
 
     outlier_key = np.where(outcasts == -1)[0]
@@ -226,7 +226,7 @@ def __detect_outliers_local_outlier_factor(betas, ids, beta_clusters, id_cluster
     --------
     Detailed Documentation of the function parameters can be found on sklearn.
     Link:https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html#sklearn.neighbors.LocalOutlierFactor
-    """  # noqa pylint: disable = line-too-long
+    """
     outcasts = LocalOutlierFactor(**kwargs).fit_predict(betas)
 
     outlier_key = np.where(outcasts == -1)[0]
@@ -267,7 +267,7 @@ def __detect_outliers_one_class_svm(betas, ids, beta_clusters, id_clusters, **kw
     --------
     Detailed Documentation of the function parameters can be found on sklearn.
     Link: https://scikit-learn.org/stable/modules/generated/sklearn.svm.OneClassSVM.html#sklearn.svm.OneClassSVM
-    """  # noqa: E501 pylint: disable = line-too-long
+    """
 
     outcasts = OneClassSVM(**kwargs).fit_predict(betas)
 
@@ -363,7 +363,7 @@ def __rescale_betas(betas):
     return betas / (maxb.T), maxb.T
 
 
-def list_detectors_and_cluster():
+def list_detectors_and_cluster() -> None:
     """
     Prints out all keywords for outlier detection and clustering functions
 
@@ -379,7 +379,7 @@ def list_detectors_and_cluster():
         print("   " + entry)
 
 
-def document_algorithm(keyword):
+def document_algorithm(keyword) -> None:
     """
     prints out the docstring of the function related to the input keyword
 
@@ -565,7 +565,7 @@ def create_detector_arg_dict(args: Sequence[str]) -> Union[tuple[str, dict], str
         except ValueError:
             err_msg = (
                 f"Outlier Detection: Invalid value {values[ind]} "
-                "for parameter {param} of type {v_type}"
+                f"for parameter {param} of type {v_type}"
             )
             return err_msg
         detector_arg_dict[param] = val
@@ -673,14 +673,14 @@ def group_betas(
 
         except TypeError as key_err:
             err_msg = (
-                f"During Outlier Detection, a TypeError came up:\n{str(key_err)}\n"
+                f"During Outlier Detection, a TypeError came up:\n{key_err!s}\n"
                 "Please check your outlier detection arguments"
             )
             return err_msg
 
         except ValueError as val_err:
             err_msg = (
-                f"During Outlier Detection, a ValueError came up:\n{str(val_err)}\n"
+                f"During Outlier Detection, a ValueError came up:\n{val_err!s}\n"
                 "Please check your outlier detection arguments"
             )
             return err_msg
@@ -694,14 +694,14 @@ def group_betas(
             )
         except TypeError as key_err:
             err_msg = (
-                f"During Clustering, a TypeError came up:\n{str(key_err)}\n"
+                f"During Clustering, a TypeError came up:\n{key_err!s}\n"
                 "Please check your outlier detection arguments"
             )
             return err_msg
 
         except ValueError as val_err:
             err_msg = (
-                f"During Clustering, a ValueError came up:\n{str(val_err)}\n"
+                f"During Clustering, a ValueError came up:\n{val_err!s}\n"
                 "Please check your outlier detection arguments"
             )
             return err_msg

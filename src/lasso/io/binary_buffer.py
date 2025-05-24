@@ -136,7 +136,7 @@ class BinaryBuffer:
         """
         return np.frombuffer(self.mv_, dtype=dtype, count=1, offset=start)[0]
 
-    def write_number(self, start: int, value: Any, dtype: np.dtype):
+    def write_number(self, start: int, value: Any, dtype: np.dtype) -> None:
         """Write a number to the buffer
 
         Parameters
@@ -173,7 +173,7 @@ class BinaryBuffer:
 
         return np.frombuffer(self.mv_[start : start + length : step], dtype=dtype)
 
-    def write_ndarray(self, array: np.ndarray, start: int, step: int):
+    def write_ndarray(self, array: np.ndarray, start: int, step: int) -> None:
         """Write a numpy array to the buffer
 
         Parameters
@@ -206,7 +206,7 @@ class BinaryBuffer:
         """
         return self.mv_[start : start + length : step].tobytes().decode(encoding)
 
-    def save(self, filepath: Union[str, None] = None):
+    def save(self, filepath: Union[str, None] = None) -> None:
         """Save the binary buffer to a file
 
         Parameters
@@ -230,7 +230,7 @@ class BinaryBuffer:
 
         self.filepath_ = filepath_parsed
 
-    def load(self, filepath: Union[list[str], str, None] = None, n_bytes: int = 0):
+    def load(self, filepath: Union[list[str], str, None] = None, n_bytes: int = 0) -> None:
         """load a file
 
         Parameters
@@ -266,7 +266,7 @@ class BinaryBuffer:
         buffer = memoryview(bytearray(b"0" * memorysize))
 
         # read files and concatenate them
-        sizes_tmp = [0] + sizes
+        sizes_tmp = [0, *sizes]
         for i_path, path in enumerate(filepath_parsed):
             with open(path, "br") as fp:
                 if n_bytes:
@@ -279,7 +279,7 @@ class BinaryBuffer:
         self.sizes_ = sizes
         self.mv_ = buffer
 
-    def append(self, binary_buffer: "BinaryBuffer"):
+    def append(self, binary_buffer: "BinaryBuffer") -> None:
         """Append another binary buffer to this one
 
         Parameters

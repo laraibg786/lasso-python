@@ -10,7 +10,7 @@ from test.plot_creator_helper import create_n_fake_plots
 
 
 class TestDimredRun(TestCase):
-    def test_run(self):
+    def test_run(self) -> None:
         """Verifies correct function of DimredRun.py"""
         verification_hdf5_file = h5py.File(
             "test/test_data/DimredRunTest/verificationFile.hdf5", "r"
@@ -95,7 +95,7 @@ class TestDimredRun(TestCase):
                 verify_diff_mat = np.stack([
                     verify_displ_stacked[:, 0, :] for _ in range(5)
                 ]).reshape(49, 5, 2000 * 3)
-                verify_displ_stacked = verify_displ_stacked - verify_diff_mat
+                verify_displ_stacked -= verify_diff_mat
 
                 # calculate betas and check if they are similar
                 verify_betas = np.einsum("stn, ktn -> stk", verify_displ_stacked, test_v_rob)
@@ -143,7 +143,7 @@ class TestDimredRun(TestCase):
                 console=None,
             )
 
-    def test_for_errors(self):
+    def test_for_errors(self) -> None:
         """Verifies correct error behaviour when facing incorrect parser arguments"""
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -255,7 +255,7 @@ class TestDimredRun(TestCase):
                 n_processes=5,
             )
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         # cleanup of created files
         test_files = os.listdir("test/test_data/DimredRunTest")
         test_files.pop(test_files.index("verificationFile.hdf5"))

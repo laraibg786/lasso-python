@@ -4,7 +4,7 @@ from lasso.math.stochastic import jensen_shannon_entropy
 
 
 class Test(unittest.TestCase):
-    def test_jensen_shannon_entropy(self):
+    def test_jensen_shannon_entropy(self) -> None:
         p1 = [0.5, 0.5, 0.0]
         p2 = [0, 0.1, 0.9]
 

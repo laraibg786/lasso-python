@@ -1044,11 +1044,11 @@ class FemzipAPI:
             variable_category = FemzipVariableCategory.from_int(var_info.var_type)
 
             if variable_category == FemzipVariableCategory.NODE:
-                if variable_type.value in (
+                if variable_type.value in {
                     FemzipArrayType.NODE_DISPLACEMENT.value,
                     FemzipArrayType.NODE_VELOCITIES.value,
                     FemzipArrayType.NODE_ACCELERATIONS.value,
-                ):
+                }:
                     array_size = file_metadata.number_of_nodes * 3
                     var_array = all_vars_array[:, var_pos : var_pos + array_size].reshape((
                         n_timesteps_read,
@@ -1056,14 +1056,14 @@ class FemzipAPI:
                         3,
                     ))
                     var_pos += array_size
-                    result_arrays[(variable_index, variable_name, FemzipVariableCategory.NODE)] = (
+                    result_arrays[variable_index, variable_name, FemzipVariableCategory.NODE] = (
                         var_array
                     )
                 else:
                     array_size = file_metadata.number_of_nodes
                     var_array = all_vars_array[:, var_pos : var_pos + array_size]
                     var_pos += array_size
-                    result_arrays[(variable_index, variable_name, FemzipVariableCategory.NODE)] = (
+                    result_arrays[variable_index, variable_name, FemzipVariableCategory.NODE] = (
                         var_array
                     )
 
@@ -1074,14 +1074,14 @@ class FemzipAPI:
                 )
                 var_array = all_vars_array[:, var_pos : var_pos + array_size]
                 var_pos += array_size
-                result_arrays[(variable_index, variable_name, FemzipVariableCategory.SHELL)] = (
+                result_arrays[variable_index, variable_name, FemzipVariableCategory.SHELL] = (
                     var_array
                 )
             elif variable_category == FemzipVariableCategory.SOLID:
                 array_size = file_metadata.number_of_solid_elements
                 var_array = all_vars_array[:, var_pos : var_pos + array_size]
                 var_pos += array_size
-                result_arrays[(variable_index, variable_name, FemzipVariableCategory.SOLID)] = (
+                result_arrays[variable_index, variable_name, FemzipVariableCategory.SOLID] = (
                     var_array
                 )
             elif variable_category == FemzipVariableCategory.BEAM:

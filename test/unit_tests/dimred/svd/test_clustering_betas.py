@@ -7,7 +7,7 @@ from lasso.dimred.svd.keyword_types import ClusterType, DetectorType
 
 
 class TestClustering(TestCase):
-    def test_group_betas(self):
+    def test_group_betas(self) -> None:
         """tests correct function of the group_betas function
         in clustering_betas.py"""
 

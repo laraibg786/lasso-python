@@ -14,7 +14,7 @@ MARKER_ERROR = "[X]" if platform.system() == "Windows" else "[✘]"
 LOGGER_NAME = "lasso"
 
 
-def str_info(msg: str):
+def str_info(msg: str) -> str:
     """Format a message as stuff is running
 
     Parameters
@@ -31,7 +31,7 @@ def str_info(msg: str):
     return f"{MARKER_INFO} {msg}"
 
 
-def str_running(msg: str):
+def str_running(msg: str) -> str:
     """Format a message as stuff is running
 
     Parameters
@@ -47,7 +47,7 @@ def str_running(msg: str):
     return f"{MARKER_RUNNING} {msg}"
 
 
-def str_success(msg: str):
+def str_success(msg: str) -> str:
     """Format a message as successful
 
     Parameters
@@ -63,7 +63,7 @@ def str_success(msg: str):
     return ConsoleColoring.green(f"{MARKER_SUCCESS} {msg}")
 
 
-def str_warn(msg: str):
+def str_warn(msg: str) -> str:
     """Format a string as a warning
 
     Parameters
@@ -79,7 +79,7 @@ def str_warn(msg: str):
     return ConsoleColoring.yellow(f"{MARKER_WARNING} {msg}")
 
 
-def str_error(msg: str):
+def str_error(msg: str) -> str:
     """Format a string as an error
 
     Parameters

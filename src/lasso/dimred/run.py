@@ -10,7 +10,7 @@ from lasso.dimred.dimred_run import (
 )
 
 
-def main():
+def main() -> None:
     """Runs the dimensionality reduction CLI"""
 
     # parse command line stuff

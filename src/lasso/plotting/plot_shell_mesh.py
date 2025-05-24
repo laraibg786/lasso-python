@@ -32,7 +32,7 @@ def plot_shell_mesh(
     field: Union[np.ndarray, None] = None,
     is_element_field: bool = True,
     fringe_limits: Union[tuple[float, float], None] = None,
-):
+) -> str:
     """Plot a mesh
 
     Parameters
@@ -75,7 +75,7 @@ def plot_shell_mesh(
         )
 
     shape_1 = getattr(shell_node_indexes, "shape", (None, None))[1]
-    if shape_1 not in (3, 4):
+    if shape_1 not in {3, 4}:
         raise ValueError(f"shell_node_indexes must have shape[1] of 3 or 4, got shape[1]={shape_1}")
 
     if isinstance(field, np.ndarray):
@@ -184,7 +184,7 @@ def plot_shell_mesh(
     zip_data = b64encode(zip_data.getvalue()).decode("utf-8")
 
     # read html template
-    _html_template = _read_file(
+    html_template = _read_file(
         os.path.join(os.path.dirname(__file__), "resources", "template.html")
     )
 
@@ -198,7 +198,7 @@ def plot_shell_mesh(
         min_value = field.min()
         max_value = field.max()
 
-    _html_div = _html_template.format(
+    html_div = html_template.format(
         div_id=uuid.uuid4(), lowIntensity=min_value, highIntensity=max_value, zdata=zip_data
     )
 
@@ -217,10 +217,10 @@ def plot_shell_mesh(
     jszip_jquery_format = _read_file(
         os.path.join(os.path.dirname(__file__), "resources", "jquery.min.js")
     )
-    _html_jszip_js = script_string_js.format(jszip_js_format)
-    _html_three_js = script_string_js.format(jszip_three_format)
-    _html_chroma_js = script_string_js.format(jszip_chroma_format)
-    _html_jquery_js = script_string_js.format(jszip_jquery_format)
+    html_jszip_js = script_string_js.format(jszip_js_format)
+    html_three_js = script_string_js.format(jszip_three_format)
+    html_chroma_js = script_string_js.format(jszip_chroma_format)
+    html_jquery_js = script_string_js.format(jszip_jquery_format)
 
     # pylint: disable = consider-using-f-string
     return f"""
@@ -228,12 +228,12 @@ def plot_shell_mesh(
 <html lang="en">
     <head>
     <meta charset="utf-8" />
-        {_html_jquery_js}
-        {_html_jszip_js}
-        {_html_three_js}
-        {_html_chroma_js}
+        {html_jquery_js}
+        {html_jszip_js}
+        {html_three_js}
+        {html_chroma_js}
     </head>
     <body>
-        {_html_div}
+        {html_div}
     </body>
 </html>"""

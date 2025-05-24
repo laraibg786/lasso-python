@@ -498,7 +498,7 @@ class FemzipMapper:
     def __init__(self):
         pass
 
-    def map(self, result_arrays: dict[tuple[int, str, FemzipVariableCategory], np.ndarray]):
+    def map(self, result_arrays: dict[tuple[int, str, FemzipVariableCategory], np.ndarray]) -> None:
         """Map femzip data to d3plot arrays.
 
         Parameters
@@ -585,7 +585,7 @@ class FemzipMapper:
             # print(arr_info)
 
             d3_array_types = TRANSL_FEMZIP_ARRATYPE_TO_D3PLOT_ARRAYTYPE[
-                (arr_info.array_type, arr_info.category)
+                arr_info.array_type, arr_info.category
             ]
 
             # var_name = var_name.strip()
@@ -596,11 +596,11 @@ class FemzipMapper:
                 # beam layer vars always have same name but
                 # must be counted up as layers
                 if (arr_info.full_name, arr_info.category) in name_count:
-                    count = name_count[(arr_info.full_name, arr_info.category)]
+                    count = name_count[arr_info.full_name, arr_info.category]
                     i_layer = count + 1
-                    name_count[(arr_info.full_name, arr_info.category)] = i_layer
+                    name_count[arr_info.full_name, arr_info.category] = i_layer
                 else:
-                    name_count[(arr_info.full_name, arr_info.category)] = 0
+                    name_count[arr_info.full_name, arr_info.category] = 0
 
                 # update shape
                 array_shape_info.set_n_timesteps(arr_info.array.shape[0])
@@ -635,13 +635,13 @@ class FemzipMapper:
         # now we need to correct i_layers from None to 0 for them
         name_count2 = {}
         for arr_info in fz_arrays:
-            count = name_count[(arr_info.full_name, arr_info.category)]
+            count = name_count[arr_info.full_name, arr_info.category]
 
             if count != 0 and arr_info.i_layer is None:
                 count2 = name_count2.get((arr_info.full_name, arr_info.category), -1)
                 count2 += 1
                 arr_info.i_layer = count2
-                name_count2[(arr_info.full_name, arr_info.category)] = count2
+                name_count2[arr_info.full_name, arr_info.category] = count2
 
                 for mapping in arr_info.mappings:
                     shape_info = shape_infos[mapping.d3plot_array_type]
@@ -654,7 +654,7 @@ class FemzipMapper:
                 arr_info.mappings[0].just_assign = True
 
                 d3_array_types = TRANSL_FEMZIP_ARRATYPE_TO_D3PLOT_ARRAYTYPE[
-                    (arr_info.array_type, arr_info.category)
+                    arr_info.array_type, arr_info.category
                 ]
 
                 for array_type in d3_array_types:
@@ -837,7 +837,7 @@ def filter_femzip_variables(
 
             # check if we asked for the array
             matching_array_types = TRANSL_FEMZIP_ARRATYPE_TO_D3PLOT_ARRAYTYPE[
-                (fz_array_type, FemzipVariableCategory(var_type))
+                fz_array_type, FemzipVariableCategory(var_type)
             ]
 
             if d3plot_array_filter is not None:

@@ -8,7 +8,7 @@ import sys
 import time
 from collections.abc import Sequence
 from concurrent.futures.process import ProcessPoolExecutor
-from typing import Union
+from typing import NoReturn, Union
 
 import h5py
 import numpy as np
@@ -39,16 +39,13 @@ class DimredRunError(Exception):
         self.message = msg
 
 
-def get_application_header():
-    """Prints the header of the command line tool"""
-
-    return """
+LASSO_AI_APPLICATION_HEADER = """
 
        ==== LASSO - AI ====
 
        visit us: [link=http://www.lasso.de/en]www.lasso.de/en[/link]
        mail: lasso@lasso.de
-    """
+"""
 
 
 def timestamp() -> str:
@@ -329,7 +326,7 @@ class DimredRun:
         # Set up Rich Console and Rich logging
         self.console = console
         if self.console:
-            self.console.print(get_application_header(), style="success", highlight=True)
+            self.console.print(LASSO_AI_APPLICATION_HEADER, style="success", highlight=True)
 
         self.logfile_filepath = (
             logfile_filepath
@@ -391,7 +388,7 @@ class DimredRun:
 
         self.pool = None
 
-    def log(self, msg: str, style: Union[str, None] = None, highlight: bool = False):
+    def log(self, msg: str, style: Union[str, None] = None, highlight: bool = False) -> None:
         """Log a message
 
         Parameters
@@ -406,7 +403,7 @@ class DimredRun:
         if self.console:
             self.console.print(timestamp() + msg, style=style, highlight=highlight)
 
-    def raise_error(self, err_msg: str):
+    def raise_error(self, err_msg: str) -> NoReturn:
         """
         Parameters
         ----------
@@ -678,7 +675,7 @@ class DimredRun:
             msg = "The class function can only be used in a 'with' block on the instance itself."
             self.raise_error(msg)
 
-    def reset_project_dir(self):
+    def reset_project_dir(self) -> None:
         """resets the project directory entirely"""
 
         # delete folder
@@ -688,7 +685,7 @@ class DimredRun:
         if self.project_dir:
             os.makedirs(self.project_dir, exist_ok=True)
 
-    def process_reference_run(self):
+    def process_reference_run(self) -> None:
         """Process the reference run"""
 
         # is a process pool up
@@ -728,7 +725,7 @@ class DimredRun:
         self.log("Total time for Reference subsample: " + str(reference_sample[1])[:5])
         self.log("Reference subsample completed", style="success")
 
-    def subsample_to_reference_run(self):
+    def subsample_to_reference_run(self) -> None:
         """Subsamples all runs"""
 
         # pylint: disable = too-many-branches,too-many-locals
@@ -832,7 +829,7 @@ class DimredRun:
         # Problem: we might be running into issues with available RAM?
         # 1000 runs, 30 timesteps, sub-sampled onto 2000 points -> 1,34GB
 
-    def dimension_reduction_svd(self):
+    def dimension_reduction_svd(self) -> None:
         """Calculate V_ROB and Betas"""
 
         # pylint: disable = too-many-locals
@@ -916,7 +913,7 @@ class DimredRun:
 
         self.log("Dimension Reduction completed", style="success")
 
-    def clustering_results(self):
+    def clustering_results(self) -> None:
         """clustering results"""
 
         # pylint: disable = too-many-locals
@@ -1008,7 +1005,7 @@ class DimredRun:
 
         self.log("Clustering completed", style="success")
 
-    def visualize_results(self):
+    def visualize_results(self) -> None:
         """creates an output .html file"""
 
         self._perform_context_check()

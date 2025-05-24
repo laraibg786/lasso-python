@@ -4,7 +4,7 @@ from lasso.io.files import collect_files
 
 
 class Test(unittest.TestCase):
-    def test_collect_files(self):
+    def test_collect_files(self) -> None:
         files = collect_files("test/test_data/io_test", "*.txt")
         self.assertEqual(len(files), 1)
 

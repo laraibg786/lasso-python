@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 from unittest import TestCase
 
 import numpy as np
@@ -257,8 +257,8 @@ class MapperTest(TestCase):
         self,
         fz: dict[tuple[str, FemzipVariableCategory], np.ndarray],
         d3plot_shape: tuple,
-        data_index_positions: Union[tuple, slice] = None,
-    ):
+        data_index_positions: Optional[Union[tuple, slice]] = None,
+    ) -> None:
         """Validate that the arrays have the same shape and that the
         raw data has been allocated to the correct positions in the
         d3plot arrays.
@@ -289,7 +289,7 @@ class MapperTest(TestCase):
 
         _ = m.d3plot_arrays[d3plot_name]
 
-    def test_nodal_disp(self):
+    def test_nodal_disp(self) -> None:
         m = FemzipMapper()
 
         # NODE DISPLACEMENT
@@ -302,7 +302,7 @@ class MapperTest(TestCase):
         result = m.d3plot_arrays
         self.assertTrue(np.allclose(nd, result["node_displacement"]))
 
-    def test_tshells(self):
+    def test_tshells(self) -> None:
         d = np.random.randn(2, 2)
 
         fz = {
@@ -322,7 +322,7 @@ class MapperTest(TestCase):
         self.assertEqual(r[ArrayType.element_tshell_strain].shape, (2, 2, 1, 4))
         self.assertTrue(np.allclose(r[ArrayType.element_tshell_strain][:, :, 0, 3], d))
 
-    def test_internal_shell_energy(self):
+    def test_internal_shell_energy(self) -> None:
         interal_energy = np.array([[1, 1, 0.12, 2.121202, 2.1123, 7.213]]).reshape(2, 3)
 
         fz = {(1, "internal_energy", FemzipVariableCategory.SHELL): interal_energy}
@@ -333,7 +333,7 @@ class MapperTest(TestCase):
         r = m.d3plot_arrays[ArrayType.element_shell_internal_energy]
         self.assertTrue(np.allclose(r, interal_energy))
 
-    def test_dependent_variable(self):
+    def test_dependent_variable(self) -> None:
         d1 = np.random.randn(2, 1200)
         d2 = np.random.randn(2, 1200)
 
@@ -352,7 +352,7 @@ class MapperTest(TestCase):
         self.assertTrue(np.allclose(d1, r[ArrayType.element_shell_unknown_variables][:, :, 0]))
         self.assertTrue(np.allclose(d2, r[ArrayType.element_shell_unknown_variables][:, :, 1]))
 
-    def test_effective_p_strain(self):
+    def test_effective_p_strain(self) -> None:
         m = FemzipMapper()
         d1 = np.random.randn(2, 20000)
         d2 = np.random.randn(2, 20000)
@@ -380,7 +380,7 @@ class MapperTest(TestCase):
             np.allclose(d3, r[ArrayType.element_shell_effective_plastic_strain][:, :, 2])
         )
 
-    def test_others(self):
+    def test_others(self) -> None:
         stress_1 = np.random.randn(2, 2)
         stress_2 = np.random.randn(2, 2)
         stress_3 = np.random.randn(2, 2)
@@ -435,7 +435,7 @@ class MapperTest(TestCase):
 
         self.assertEqual(r[ArrayType.element_shell_strain].shape, (1, 2, 2, 4))
 
-    def test_beam(self):
+    def test_beam(self) -> None:
         axial_force = np.random.randn(5, 12)
         shear = np.random.randn(2, 4)
 

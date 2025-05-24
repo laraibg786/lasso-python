@@ -1,5 +1,5 @@
 import enum
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 import rich
@@ -707,7 +707,7 @@ class D3plotHeader:
 
         # ndim
         ndim = self.raw_header["ndim"]
-        if ndim in (5, 7):
+        if ndim in {5, 7}:
             self.has_material_type_section = True
             ndim = 3
             # self.raw_header['elem_connectivity_unpacked'] = True
@@ -717,13 +717,13 @@ class D3plotHeader:
         if 5 < ndim < 8:
             ndim = 3
             self.has_rigid_road_surface = True
-        if ndim in (8, 9):
+        if ndim in {8, 9}:
             ndim = 3
             self.has_rigid_body_data = True
             if self.raw_header["ndim"] == 9:
                 self.has_rigid_road_surface = True
                 self.has_reduced_rigid_body_data = True
-        if ndim not in (2, 3):
+        if ndim not in {2, 3}:
             raise RuntimeError(f"Invalid header entry ndim: {self.raw_header['ndim']}")
 
         self.n_nodes = self.raw_header["numnp"]
@@ -1054,7 +1054,9 @@ class D3plotHeader:
 
         return 8 if self.n_solid_vars // max(n_solid_base_vars, 1) >= 8 else 1
 
-    def read_words(self, bb: BinaryBuffer, words_to_read: dict, storage_dict: dict = None):
+    def read_words(
+        self, bb: BinaryBuffer, words_to_read: dict, storage_dict: Optional[dict] = None
+    ):
         """Read several words described by a dict
 
         Parameters
@@ -1092,7 +1094,7 @@ class D3plotHeader:
                     storage_dict[name] = ""
 
             else:
-                raise RuntimeError(f"Encountered unknown dtype {str(data[1])} during reading.")
+                raise RuntimeError(f"Encountered unknown dtype {data[1]!s} during reading.")
 
         return storage_dict
 
@@ -1130,11 +1132,11 @@ class D3plotHeader:
             value = bb.read_number(44, np.int32)
             if value > 1000:
                 value -= 1000
-            if value in (
+            if value in {
                 D3plotFiletype.D3PLOT.value,
                 D3plotFiletype.D3PART.value,
                 D3plotFiletype.D3EIGV.value,
-            ):
+            }:
                 word_size = 4
                 itype = np.int32
                 ftype = np.float32
@@ -1148,11 +1150,11 @@ class D3plotHeader:
             value = bb.read_number(88, np.int64)
             if value > 1000:
                 value -= 1000
-            if value in (
+            if value in {
                 D3plotFiletype.D3PLOT.value,
                 D3plotFiletype.D3PART.value,
                 D3plotFiletype.D3EIGV.value,
-            ):
+            }:
                 word_size = 8
                 itype = np.int64
                 ftype = np.float64

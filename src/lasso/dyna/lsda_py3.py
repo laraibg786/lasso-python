@@ -68,7 +68,7 @@ class _Diskfile:
             # Write initial header and ST offset command.
             s = bytes("", "UTF-8")
             for h in header:
-                s = s + struct.pack("B", h)
+                s += struct.pack("B", h)
             self.fp.write(s)
             self.writecommand(17, Lsda.SYMBOLTABLEOFFSET)
             self.writeoffset(17, 0)
@@ -266,7 +266,7 @@ class Symbol:
         pos = self.offset + self.file.comp2 + len(self.name) + start * size
         self.file.fp.seek(pos)
         self.file.ateof = 0
-        size = size * (end - start)
+        size *= end - start
         return self.file.fp.read(size)
 
 
@@ -402,7 +402,7 @@ def _get_min_cd(cwd, cd):
         if have[i] != want[i]:
             break
         head = i + 1
-        head_length = head_length + len(have[i])
+        head_length += len(have[i])
     if head == 0:
         return cd
 
@@ -576,7 +576,7 @@ class Lsda:
         self.dirty_symbols.add(sym)
         return sym
 
-    def close(self):
+    def close(self) -> None:
         """Close the file"""
         self.flush()
         for f in self.files:
@@ -589,7 +589,7 @@ class Lsda:
         prefixed with a relative or absolute path"""
         return self.cwd.get(path)
 
-    def flush(self):  # write ST and flush file
+    def flush(self) -> None:  # write ST and flush file
         """Write a SYMBOLTABLE as needed for any new DATA, and flush the file"""
         if self.fw is None or self.fw.fp.closed:
             return

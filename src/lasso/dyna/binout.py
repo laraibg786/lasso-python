@@ -425,7 +425,7 @@ class Binout:
 
         return string
 
-    def save_hdf5(self, filepath, compression="gzip"):
+    def save_hdf5(self, filepath, compression="gzip") -> None:
         """Save a binout as HDF5
 
         Parameters
@@ -468,7 +468,7 @@ class Binout:
                 hdf5_grp = hdf5_grp.create_group(path_str)
 
             for entry in ret:
-                path_child = path + (entry,)
+                path_child = (*path, entry)
                 self._save_all_variables(hdf5_grp, compression, *path_child)
         # children are variables
         else:

@@ -27,7 +27,7 @@ class ConsoleColoring:
     RESET = "\033[0m"
 
     @staticmethod
-    def purple(msg, light=False):
+    def purple(msg: str, light=False) -> str:
         """Format a string in purple
 
         Parameters
@@ -49,7 +49,7 @@ class ConsoleColoring:
         )
 
     @staticmethod
-    def yellow(msg, light=False):
+    def yellow(msg: str, light=False) -> str:
         """Format a string in yellow
 
         Parameters
@@ -71,7 +71,7 @@ class ConsoleColoring:
         )
 
     @staticmethod
-    def red(msg, light=False):
+    def red(msg: str, light=False) -> str:
         """Format a string in red
 
         Parameters
@@ -93,7 +93,7 @@ class ConsoleColoring:
         )
 
     @staticmethod
-    def green(msg, light=False):
+    def green(msg: str, light=False) -> str:
         """Format a string in green
 
         Parameters
@@ -115,7 +115,7 @@ class ConsoleColoring:
         )
 
     @staticmethod
-    def blue(msg, light=False):
+    def blue(msg: str, light=False) -> str:
         """Format a string in green
 
         Parameters

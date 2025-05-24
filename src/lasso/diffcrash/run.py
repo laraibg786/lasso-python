@@ -39,7 +39,7 @@ def _parse_stages(start_stage: str, end_stage: str):
     return start_stage_index, end_stage_index
 
 
-def main():
+def main() -> None:
     """Main function for running diffcrash"""
 
     # parse command line stuff
